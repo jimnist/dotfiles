@@ -1,6 +1,6 @@
 # dotfiles
 
-forked from [holman/dotfiles](https://github.com/holman/dotfiles) - see [HOLMAN_README.md](HOLMAN_README.md)
+~~forked~~ from [holman/dotfiles](https://github.com/holman/dotfiles) - see [HOLMAN_README.md](HOLMAN_README.md)
 
 # before
 
