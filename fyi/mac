@@ -1,0 +1,183 @@
+#!/bin/sh
+
+# Be prepared to turn your laptop (or desktop, no haters here)
+# into an awesome development machine.
+
+SHELL_CHANGES=() # This is the list of environment variables/source commands to
+                 # present to the user if they pass -Z.
+
+fancy_echo() {
+  local fmt="$1"; shift
+
+  # shellcheck disable=SC2059
+  printf "\n$fmt\n" "$@"
+}
+
+append_to_shellrc() {
+  local text="$1"
+
+  SHELL_CHANGES+=("$text")
+}
+
+# shellcheck disable=SC2154
+trap 'ret=$?; test $ret -ne 0 && printf "failed\n\n" >&2; exit $ret' EXIT
+
+if [ ! -d "$HOME/.bin/" ]; then
+  mkdir "$HOME/.bin"
+fi
+
+# shellcheck disable=SC2016
+append_to_shellrc 'export PATH="$HOME/.bin:$PATH"'
+append_to_shellrc 'export NPM_TOKEN=$(heroku config:get NPM_TOKEN -a flatbook-production)'
+PATH="$HOME/.bin:$PATH" # For the current session as well
+
+HOMEBREW_PREFIX="/usr/local"
+
+if [ -d "$HOMEBREW_PREFIX" ]; then
+  if ! [ -r "$HOMEBREW_PREFIX" ]; then
+    sudo chown -R "$LOGNAME:admin" /usr/local
+  fi
+else
+  sudo mkdir "$HOMEBREW_PREFIX"
+  sudo chflags norestricted "$HOMEBREW_PREFIX"
+  sudo chown -R "$LOGNAME:admin" "$HOMEBREW_PREFIX"
+fi
+
+gem_install_or_update() {
+  if gem list "$1" --installed > /dev/null; then
+    gem update "$@"
+  else
+    gem install "$@"
+  fi
+}
+
+if ! command -v brew >/dev/null; then
+  fancy_echo "Installing Homebrew ..."
+  curl -fsS \
+    'https://raw.githubusercontent.com/Homebrew/install/master/install' | ruby
+
+  append_to_shellrc '# recommended by brew doctor'
+
+  # shellcheck disable=SC2016
+  append_to_shellrc 'export PATH="/usr/local/bin:$PATH"' 1
+
+  PATH="/usr/local/bin:$PATH" # For the current session as well
+fi
+
+if brew list --formula | grep -Fq brew-cask; then
+  fancy_echo "Uninstalling old Homebrew-Cask ..."
+  brew uninstall --force brew-cask
+fi
+
+fancy_echo "Updating Homebrew formulae ..."
+brew update --force # https://github.com/Homebrew/brew/issues/1151
+
+read -r -d '' BREW_BUNDLE_FILE <<EOF
+tap "thoughtbot/formulae"
+tap "homebrew/services"
+tap "universal-ctags/universal-ctags"
+
+# Unix
+brew "universal-ctags", args: ["HEAD"]
+brew "git"
+brew "openssl"
+brew "reattach-to-user-namespace"
+brew "the_silver_searcher"
+brew "tmux"
+brew "vim"
+
+# Heroku
+tap "heroku/brew"
+brew "heroku"
+brew "parity"
+
+# Image manipulation
+brew "imagemagick"
+
+# Testing
+brew "qt" if MacOS::Xcode.installed?
+
+# Programming language prerequisites and package managers
+brew "libyaml" # should come after openssl
+brew "coreutils"
+brew "gpg"
+brew "yarn"
+cask "gpg-suite"
+
+# Databases
+brew "postgresql@14", restart_service: :changed
+brew "redis", restart_service: :changed
+
+# Testing Support
+cask "chromedriver"
+EOF
+
+echo "${BREW_BUNDLE_FILE}" | brew bundle --file=-
+
+if brew list --formula | grep --silent "qt"; then
+  fancy_echo "Symlink qmake binary to /usr/local/bin for Capybara Webkit..."
+  brew unlink qt
+  brew link --force qt
+fi
+
+fancy_echo "Installing AWS CLI..."
+brew install awscli
+
+fancy_echo "Update heroku binary..."
+brew unlink heroku
+brew link --force heroku
+
+fancy_echo "Installing rbenv..."
+brew install rbenv
+rbenv init
+# Fix fork() issue on OSX (see: https://github.com/rtomayko/shotgun/issues/69)
+echo 'export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES'  >>~/.bash_profile >>~/.zshrc
+
+echo 'eval "$(rbenv init -)"' >>~/.bash_profile >>~/.zshrc
+
+fancy_echo "Installing Ruby 2.7.3..."
+brew upgrade ruby-build
+rbenv install "2.7.3" --skip-existing
+
+fancy_echo "Installing nvm..."
+brew install nvm
+
+mkdir ~/.nvm
+
+if [ "$NVM_DIR" = "" ]; then
+	echo 'export NVM_DIR="$HOME/.nvm"' >>~/.bash_profile >>~/.zshrc
+	echo '[ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"' >>~/.bash_profile >>~/.zshrc
+	echo '[ -s "/usr/local/opt/nvm/etc/bash_completion" ] && . "/usr/local/opt/nvm/etc/bash_completion"' >>~/.bash_profile >>~/.zshrc
+fi
+
+source ~/.bash_profile
+source ~/.zshrc
+
+fancy_echo "Installing Node 10.16..."
+nvm install 10.16
+
+if [ -f "$HOME/.laptop.local" ]; then
+  fancy_echo "Running your customizations from ~/.laptop.local ..."
+  # shellcheck disable=SC1090
+  . "$HOME/.laptop.local"
+fi
+
+fancy_echo "Script complete!"
+fancy_echo ""
+fancy_echo "=============================================="
+fancy_echo ""
+# Ok, there's some incongruence around bash(1) here.
+# On Linux:
+#   .bash_profile is executed for login shells, and
+#   .bashrc is called for interactive non-login shells.
+# In macOS, Terminal (and every other macOS terminal emulator)
+#   always starts bash as a login shell (thus it always calls .bash_profile).
+if [[ $(uname -s) = 'Darwin' ]]; then
+    fancy_echo "Please add the following to your shell rc (.zshrc, .bash_profile, etc):"
+else
+    fancy_echo "Please add the following to your shell rc (.bashrc, etc):"
+fi
+echo ""
+for line in "${SHELL_CHANGES[@]}"; do
+    echo $line;
+done

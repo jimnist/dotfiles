@@ -1,3 +1,6 @@
 alias reload!='. ~/.zshrc'
 
 alias cls='clear' # Good 'ol Clear Screen command
+
+alias be='bundle exec '
+alias gst="git status"
