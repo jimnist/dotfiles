@@ -2,6 +2,10 @@
 
 forked from [Ryan Bates' dotfiles](https://github.com/ryanb/dotfiles)
 
+## Software to install
+
+see [this gist]((https://gist.github.com/jimnist/cb31f87629fe2c3738203d7084a2a889)
+
 ## Installation
 
 Run the `bin/install` command to copy files over. It will prompt you before replacing if the files already exist.
