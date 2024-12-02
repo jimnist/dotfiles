@@ -1,23 +1,20 @@
-# Ryan Bates Dot Files
+# Jim Nist Dot Files
 
-These are config files to set up Mac OS X command line the way I like it using [Zsh](https://www.zsh.org).
-
-For an older version that uses [Oh My Zsh](https://github.com/robbyrussell/oh-my-zsh), check out [this branch](https://github.com/ryanb/dotfiles/tree/oh-my-zsh).
-
+forked from [Ryan Bates' dotfiles](https://github.com/ryanb/dotfiles)
 
 ## Installation
 
 Run the `bin/install` command to copy files over. It will prompt you before replacing if the files already exist.
 
 ```sh
-git clone git@github.com/ryanb/dotfiles ~/.dotfiles
+git clone git@github.com/jimnist/dotfiles ~/.dotfiles
 cd ~/.dotfiles
 ./bin/install
 ```
 
 After installing, open a new terminal window to see the effects.
 
-Feel free to customize the .zshrc file to match your preference.
+customize the .zshrc file.
 
 
 ## Features
