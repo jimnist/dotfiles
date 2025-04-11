@@ -11,7 +11,7 @@ see [this gist](https://gist.github.com/jimnist/cb31f87629fe2c3738203d7084a2a889
 Run the `bin/install` command to copy files over. It will prompt you before replacing if the files already exist.
 
 ```sh
-git clone git@github.com/jimnist/dotfiles ~/.dotfiles
+git clone git@github.com:jimnist/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 ./bin/install
 ```
