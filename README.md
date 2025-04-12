@@ -1,12 +1,12 @@
-# Jim Nist Dot Files
+# jim nist dotfiles
 
 forked from [Ryan Bates' dotfiles](https://github.com/ryanb/dotfiles)
 
-## Software to install
+## software to install
 
 see [this gist](https://gist.github.com/jimnist/cb31f87629fe2c3738203d7084a2a889)
 
-## Installation
+## installation
 
 Run the `bin/install` command to copy files over. It will prompt you before replacing if the files already exist.
 
@@ -21,9 +21,9 @@ After installing, open a new terminal window to see the effects.
 customize the .zshrc file.
 
 
-## Features
+## features
 
-I normally place all of my coding projects in ~/code, so this directory can easily be accessed (and tab completed) with the "c" command.
+code goes in ~/code, so this directory can easily be accessed (and tab completed) with the "c" command.
 
 ```sh
 c railsca<tab>
@@ -38,7 +38,7 @@ h doc<tab>
 If you're using git, you'll notice the current branch name shows up in the prompt while in a git repository.
 
 
-## Uninstall
+## uninstall
 
 To remove the dotfile configs, run the following commands. Be certain to double check the contents of the files before removing so you don't lose custom settings.
 
