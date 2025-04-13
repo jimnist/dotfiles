@@ -1,12 +1,15 @@
 #!/bin/sh
+cd ~/.dotfiles
 
-ln -is $(readlink -f gemrc) ~/.gemrc
-ln -is $(readlink -f gitconfig) ~/.gitconfig
-ln -is $(readlink -f gitignore) ~/.gitignore
-ln -is $(readlink -f irbrc) ~/.irbrc
-ln -is $(readlink -f plugins) ~/.zsh-plugins
+ln -is $(readlink -f ~/.dotfiles/gemrc) ~/.gemrc
+ln -is $(readlink -f ~/.dotfiles/gitconfig) ~/.gitconfig
+ln -is $(readlink -f ~/.dotfiles/gitignore) ~/.gitignore
+ln -is $(readlink -f ~/.dotfiles/irbrc) ~/.irbrc
 
-cp -i $(readlink -f zshrc) ~/.zshrc
+stow plugins
+# ln -s ~/.dotfiles/plugins ~/.zsh-plugins
+
+cp -i $(readlink -f ~/.dotfiles/zshrc) ~/.zshrc
 
 read -p "Your Name for Git Commits: " git_name
 
