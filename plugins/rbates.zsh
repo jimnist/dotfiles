@@ -8,9 +8,3 @@ compdef _h h
 
 # autocorrect is more annoying than helpful
 unsetopt correct_all
-
-if [[ -n $SSH_CONNECTION ]]; then
-  PROMPT='%m:%3~$(git_prompt_info [ ])%# '
-else
-  PROMPT='%3~$(git_prompt_info [ ])%# '
-fi

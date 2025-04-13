@@ -11,7 +11,7 @@ cp -i $(readlink -f zshrc) ~/.zshrc
 read -p "Your Name for Git Commits: " git_name
 
 if [[ -n $git_name ]]; then
-  read -p "Your Email for Git Commits: " git_email
+  read -p "Your Email for Git Commits: " git_work_email
 
   echo "" >> ~/.zshrc
   echo "# GIT CONFIG" >> ~/.zshrc

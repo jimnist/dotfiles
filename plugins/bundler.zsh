@@ -3,6 +3,7 @@
 ## ALIASES
 
 alias be="bundle exec"
+alias bi="bundle install "
 
 
 ## GEM WRAPPER
